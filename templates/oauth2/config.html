@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>OAuth Configuration</h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link rounded-0 active" href="#oauth" role="tab" data-toggle="tab">OAuth Settings</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            {% for error in errors %}
+                <div class="alert alert-danger alert-dismissable" role="alert">
+                    <span class="sr-only">Error:</span>
+                    {{ error }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            {% endfor %}
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="oauth" role="tabpanel">
+                    <form method="POST">
+                        <div class="form-group">
+                            <label for="oauth_plugin_enabled">Plugin Status:</label>
+                            <select id="oauth_plugin_enabled" name="oauth_plugin_enabled" class="form-control">
+                                <option value="on" {% if config.get('oauth_plugin_enabled') == 'on' %}selected{% endif %}>On</option>
+                                <option value="off" {% if config.get('oauth_plugin_enabled') == 'off' %}selected{% endif %}>Off</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="oauth_client_id">Client ID:</label>
+                            <input type="text" id="oauth_client_id" name="oauth_client_id" class="form-control" value="{{ config.get('oauth_client_id') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="oauth_client_secret">Client Secret:</label>
+                            <input type="text" id="oauth_client_secret" name="oauth_client_secret" class="form-control" value="{{ config.get('oauth_client_secret') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="oauth_authorization_endpoint">Authorization Endpoint:</label>
+                            <input type="text" id="oauth_authorization_endpoint" name="oauth_authorization_endpoint" class="form-control" value="{{ config.get('oauth_authorization_endpoint') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="oauth_token_endpoint">Token Endpoint:</label>
+                            <input type="text" id="oauth_token_endpoint" name="oauth_token_endpoint" class="form-control" value="{{ config.get('oauth_token_endpoint') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="oauth_userinfo_url">User Info URL:</label>
+                            <input type="text" id="oauth_userinfo_url" name="oauth_userinfo_url" class="form-control" value="{{ config.get('oauth_userinfo_url') }}">
+                        </div>
+                        <input type="hidden" name="nonce" id="nonce" value="{{ Session.nonce }}">
+                        <button type="submit" class="btn btn-md btn-primary float-right">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
