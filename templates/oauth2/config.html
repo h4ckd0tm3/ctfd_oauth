@@ -56,6 +56,10 @@
                             <label for="oauth_userinfo_url">User Info URL:</label>
                             <input type="text" id="oauth_userinfo_url" name="oauth_userinfo_url" class="form-control" value="{{ config.get('oauth_userinfo_url') }}">
                         </div>
+                        <div class="form-group">
+                            <label for="oauth_profile_url">Profile URL:</label>
+                            <input type="text" id="oauth_profile_url" name="oauth_profile_url" class="form-control" value="{{ config.get('oauth_profile_url') }}">
+                        </div>
                         <input type="hidden" name="nonce" id="nonce" value="{{ Session.nonce }}">
                         <button type="submit" class="btn btn-md btn-primary float-right">Update</button>
                     </form>

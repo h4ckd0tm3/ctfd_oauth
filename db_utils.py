@@ -1,8 +1,6 @@
-from .models import OAUTHConfig
+from CTFd.models import db
 
-from CTFd.models import (
-    db
-)
+from .models import OAUTHConfig
 
 
 class DBUtils:
@@ -13,6 +11,7 @@ class DBUtils:
         {"key": "oauth_authorization_endpoint", "value": ""},
         {"key": "oauth_token_endpoint", "value": ""},
         {"key": "oauth_userinfo_url", "value": ""}, 
+        {"key": "oauth_profile_url", "value": ""},
     ]
 
     @staticmethod

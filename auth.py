@@ -1,19 +1,15 @@
 import requests
-from flask import abort
-from flask import redirect, request, session, url_for
-
 from CTFd.cache import clear_team_session, clear_user_session
-
-from CTFd.models import Teams, Users, db
-
-
+from CTFd.models import Teams, Users, Brackets, db
 from CTFd.utils.config import get_config
 from CTFd.utils.helpers import error_for
 from CTFd.utils.logging import log
 from CTFd.utils.modes import TEAMS_MODE
 from CTFd.utils.security.auth import login_user
-from .db_utils import DBUtils
+from flask import abort, redirect, request, session, url_for
+from datetime import datetime
 
+from .db_utils import DBUtils
 
 
 def oauth2_login():
@@ -66,8 +62,6 @@ def oauth2_callback():
 
         token_request = requests.post(url, data=data, headers=headers)
 
-        print(token_request.json())
-
         if token_request.status_code == requests.codes.ok:
             token = token_request.json()["access_token"]
             user_url = config.get("oauth_userinfo_url")
@@ -82,7 +76,8 @@ def oauth2_callback():
 
             user_name = api_data["preferred_username"]
             user_email = api_data["email"]
-            user_groups = api_data["groups"]
+            user_groups = api_data.get("groups", [])
+            user_affiliation = api_data.get("affiliation", "")
 
             user = Users.query.filter_by(email=user_email).first()
             if user is None:
@@ -99,9 +94,17 @@ def oauth2_callback():
                     name=user_name,
                     email=user_email,
                     verified=True,
+                    affiliation=user_affiliation,
                 )
+
                 db.session.add(user)
                 db.session.commit()
+            else:
+                user.name = user_name
+                user.affiliation = user_affiliation
+                user.email = user_email
+                db.session.commit()
+                clear_user_session(user_id=user.id)
 
             if get_config("user_mode") == TEAMS_MODE and user.team_id is None:
                 team_id = api_data["team"]["id"]
@@ -136,8 +139,9 @@ def oauth2_callback():
                 team.members.append(user)
                 db.session.commit()
 
-            if "CTFd Admins" in user_groups:
+            if "CTFd Admins" in user_groups and user.type != "admin":
                 user.type = "admin"
+                user.hidden = True
                 db.session.commit()
                 clear_user_session(user_id=user.id)
                 

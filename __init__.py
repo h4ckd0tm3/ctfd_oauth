@@ -1,9 +1,11 @@
 import json
 import os
-from .blueprint import load_bp
-from .db_utils import DBUtils
+
 from CTFd.utils import set_config
 from flask import redirect, url_for
+
+from .blueprint import load_bp
+from .db_utils import DBUtils
 
 PLUGIN_PATH = os.path.dirname(__file__)
 CONFIG = json.load(open(f"{PLUGIN_PATH}/config.json"))
@@ -17,11 +19,12 @@ def load(app):
 
     config = DBUtils.get_config()
 
-    # Rewrite CTFd config
     set_config('registration_visibility', False)
 
     if config.get("oauth_plugin_enabled") == "on":
         app.view_functions['auth.login'] = lambda: redirect(url_for('oauth2.oauth2_login'))
-    app.view_functions['auth.register'] = lambda: ('', 204)
-    app.view_functions['auth.reset_password'] = lambda: ('', 204)
-    app.view_functions['auth.confirm'] = lambda: ('', 204)
+        app.view_functions['auth.register'] = lambda: ('', 204)
+        app.view_functions['auth.reset_password'] = lambda: ('', 204)
+        app.view_functions['auth.confirm'] = lambda: ('', 204)
+        app.view_functions['views.settings'] = lambda: redirect(config.get("oauth_profile_url"))
+    

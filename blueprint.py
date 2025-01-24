@@ -1,7 +1,8 @@
-from flask import request, render_template, Blueprint
-from .db_utils import DBUtils
 from CTFd.utils.decorators import admins_only
+from flask import Blueprint, render_template, request
+
 from . import auth
+from .db_utils import DBUtils
 
 oauth_bp = Blueprint("oauth2", __name__, template_folder="templates")
 
