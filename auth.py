@@ -19,7 +19,7 @@ def oauth2_login():
     if get_config("user_mode") == "teams":
         scope = "profile team"
     else:
-        scope = "openid profile email"
+        scope = "openid profile email extra"
 
     client_id = config.get("oauth_client_id")
 
@@ -78,6 +78,18 @@ def oauth2_callback():
             user_email = api_data["email"]
             user_groups = api_data.get("groups", [])
             user_affiliation = api_data.get("affiliation", "")
+            
+            user_dob = api_data.get("dob", "")
+
+            if user_dob:
+                user_dob = datetime.strptime(user_dob, "%Y-%m-%d").date()
+                
+                if user_dob.year >= 2005 and user_dob.year <= 2010:
+                    bracket = Brackets.query.filter_by(name="Junior").first()
+                elif user_dob.year >= 2000 and user_dob.year <= 2004:
+                    bracket = Brackets.query.filter_by(name="Senior").first()
+                else:
+                    bracket = Brackets.query.filter_by(name="Open").first()
 
             user = Users.query.filter_by(email=user_email).first()
             if user is None:
@@ -95,6 +107,7 @@ def oauth2_callback():
                     email=user_email,
                     verified=True,
                     affiliation=user_affiliation,
+                    bracket_id=bracket.id if bracket else None,
                 )
 
                 db.session.add(user)
@@ -103,6 +116,7 @@ def oauth2_callback():
                 user.name = user_name
                 user.affiliation = user_affiliation
                 user.email = user_email
+                user.bracket_id = bracket.id if bracket else None
                 db.session.commit()
                 clear_user_session(user_id=user.id)
 
