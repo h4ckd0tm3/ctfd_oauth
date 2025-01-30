@@ -158,6 +158,11 @@ def oauth2_callback():
                 user.hidden = True
                 db.session.commit()
                 clear_user_session(user_id=user.id)
+
+            if "override_bracket" in user_groups:
+                user.bracket_id = Brackets.query.filter_by(name="Open").first()
+                db.session.commit()
+                clear_user_session(user_id=user.id)
                 
             login_user(user)
 
