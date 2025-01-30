@@ -161,7 +161,7 @@ def oauth2_callback():
                 
             login_user(user)
 
-            return redirect(url_for("challenges.listing"))
+            return redirect(url_for("views.static_html"))
         else:
             log("logins", "[{date}] {ip} - OAuth token retrieval failure")
             error_for(endpoint="auth.login", message="OAuth token retrieval failure.")
