@@ -160,7 +160,7 @@ def oauth2_callback():
                 clear_user_session(user_id=user.id)
 
             if "override_bracket" in user_groups:
-                user.bracket_id = Brackets.query.filter_by(name="Open").first()
+                user.bracket_id = Brackets.query.filter_by(name="Open").first().id
                 db.session.commit()
                 clear_user_session(user_id=user.id)
                 
